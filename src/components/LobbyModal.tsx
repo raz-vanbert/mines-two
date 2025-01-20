@@ -8,7 +8,11 @@ import {useAnimate} from "motion/react";
 import {GameStateContext} from "../providers/GameStateContext.tsx";
 import _ from 'lodash'
 
-const HOW_TO_BLURB = "Kodiak Quest challenges you to navigate a virtual wilderness where hidden bears lurk beneath the grid. Each square you reveal shows a number indicating how many Kodiak bears occupy the surrounding spaces (including diagonals). Use these clues to determine where the bears are hiding—then mark those squares to keep a safe distance. Uncover all the empty spaces without stumbling onto a bear, and you’ll complete your quest unscathed!"
+const HOW_TO_BLURB = "Kodiak Quest challenges you to navigate a virtual wilderness where " +
+    "hidden bears lurk beneath the grid. Each square you reveal shows a number indicating how many " +
+    "Kodiak bears occupy the surrounding spaces (including diagonals). Use these clues to determine " +
+    "where the bears are hiding—then mark those squares (right click) to keep a safe distance. " +
+    "Uncover all the empty spaces without stumbling onto a bear, and you’ll complete your quest unscathed!"
 
 export default function LobbyModal({newGame}: {
     newGame: (difficulty: GameDifficulty) => void
