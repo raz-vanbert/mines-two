@@ -9,7 +9,7 @@ import {
     revealCellAndNeighbors
 } from "./boardUtilities.ts";
 import {Board, Cell, GameDifficulty, GameState} from "./board.ts";
-import RemainingMines from "./components/RemainingMines.tsx";
+import RemainingBears from "./components/RemainingBears.tsx";
 import GameStateIcon from "./components/GameStateIcon.tsx";
 import LobbyModal from "./components/LobbyModal.tsx";
 import CellBox from "./components/CellBox.tsx";
@@ -97,7 +97,7 @@ export default function App() {
         <>
             <Stack spacing={2}>
                 <Stack direction='row' justifyContent='space-between'>
-                    <Box><RemainingMines board={board}/></Box>
+                    <Box><RemainingBears board={board}/></Box>
                     <Box onClick={onGameStateIconClick}><GameStateIcon gameState={gameState}/></Box>
                     <Box>{seconds}</Box>
                 </Stack>
