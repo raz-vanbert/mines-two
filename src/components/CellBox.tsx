@@ -16,7 +16,7 @@ export default function CellBox({cell, onClick, onRightClick}: {
 }
 
 const getCellDisplayValue = (cell: Cell) => {
-    if (cell.isFlagged) return '🚩'
+    if (cell.isFlagged) return '🍯'
     if (!cell.isRevealed) return null
     if (cell.isBear) return '🐻'
     if (cell.adjacentBears > 0) return cell.adjacentBears

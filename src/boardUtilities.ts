@@ -63,6 +63,7 @@ export const flagCell = (board: Board, cell: Cell) => {
 export const revealCell = (board: Board, cell: Cell) => {
     return produce(board, draftBoard => {
         draftBoard.cells[cell.row][cell.column].isRevealed = true;
+        draftBoard.cells[cell.row][cell.column].isFlagged = false;
     });
 }
 
