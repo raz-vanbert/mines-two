@@ -5,6 +5,7 @@ import App from './App.tsx'
 import {TimeProvider} from "./providers/TimeContext.tsx";
 import {BoardProvider} from "./providers/BoardContext.tsx";
 import {GameStateProvider} from "./providers/GameStateContext.tsx";
+import {Analytics} from "@vercel/analytics/react"
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -12,6 +13,7 @@ createRoot(document.getElementById('root')!).render(
             <GameStateProvider>
                 <BoardProvider>
                     <App/>
+                    <Analytics/>
                 </BoardProvider>
             </GameStateProvider>
         </TimeProvider>
