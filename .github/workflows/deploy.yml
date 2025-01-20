@@ -1,0 +1,35 @@
+name: Deploy to GitHub Pages (pnpm)
+
+on:
+  push:
+    branches:
+      - main  # or your desired branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Check out the repo
+      - uses: actions/checkout@v3
+
+      # 2. Set up pnpm
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.x  # Choose whichever major version you want
+
+      # 3. Install dependencies using pnpm
+      - name: Install Dependencies
+        run: pnpm install
+
+      # 4. Build the project using pnpm
+      - name: Build
+        run: pnpm build
+
+      # 5. Deploy to GitHub Pages
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GITHUB_TOKEN }}
+          # Adjust the publish_dir below if your build output folder has a different name
+          publish_dir: ./dist
