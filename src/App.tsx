@@ -1,8 +1,14 @@
 import {SyntheticEvent, useContext, useEffect} from "react";
 import {Box, Stack} from "@mui/material";
-import {createBoard, detonateAll, didWin, flagAllHidden, flagCell, revealCellAndNeighbors} from "./boardUtilities.ts";
+import {
+    createBoard,
+    revealAllBears,
+    didWin,
+    flagAllHidden,
+    flagCell,
+    revealCellAndNeighbors
+} from "./boardUtilities.ts";
 import {Board, Cell, GameDifficulty, GameState} from "./board.ts";
-import './App.css'
 import RemainingMines from "./components/RemainingMines.tsx";
 import GameStateIcon from "./components/GameStateIcon.tsx";
 import LobbyModal from "./components/LobbyModal.tsx";
@@ -10,6 +16,7 @@ import CellBox from "./components/CellBox.tsx";
 import {TimeContext} from "./providers/TimeContext.tsx";
 import {BoardContext} from "./providers/BoardContext.tsx";
 import {GameStateContext} from "./providers/GameStateContext.tsx";
+import './App.css'
 
 export default function App() {
 
@@ -38,7 +45,7 @@ export default function App() {
         } else {
             stopTime()
         }
-    }, [gameState])
+    }, [gameState, startTime, stopTime])
 
     const newGame = (difficulty: GameDifficulty) => {
         const newBoard = createBoard(difficulty)
@@ -53,7 +60,7 @@ export default function App() {
 
     const gameOver = () => {
         // reveal all cells
-        const newBoard = detonateAll(board)
+        const newBoard = revealAllBears(board)
         setBoard(newBoard)
         // set game state to lost
         setGameState(GameState.lost)
@@ -67,7 +74,7 @@ export default function App() {
 
     const onCellClick = (cell: Cell) => {
         if (cell.isFlagged || cell.isRevealed || gameState !== GameState.playing) return
-        if (cell.isMine) {
+        if (cell.isBear) {
             gameOver()
             return
         }

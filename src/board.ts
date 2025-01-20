@@ -1,7 +1,7 @@
 export interface Cell {
-    adjacentMines: number,
+    adjacentBears: number,
     isFlagged: boolean,
-    isMine: boolean,
+    isBear: boolean,
     isRevealed: boolean,
     row: number,
     column: number,
@@ -28,7 +28,7 @@ export const BoardSizes = {
     large: {rows: 16, columns: 32},
 }
 
-export enum MineCounts {
+export enum BearCounts {
     easy = 10,
     moderate = 25,
     hard = 60,
@@ -59,10 +59,10 @@ export const directions = [
 
 
 export const Difficulty = {
-    easy: {boardSize: BoardSizes.small, numberOfMines: MineCounts.easy},
-    moderate: {boardSize: BoardSizes.medium, numberOfMines: MineCounts.moderate},
-    hard: {boardSize: BoardSizes.large, numberOfMines: MineCounts.hard},
-    expert: {boardSize: BoardSizes.large, numberOfMines: MineCounts.expert},
+    easy: {boardSize: BoardSizes.small, numberOfBears: BearCounts.easy},
+    moderate: {boardSize: BoardSizes.medium, numberOfBears: BearCounts.moderate},
+    hard: {boardSize: BoardSizes.large, numberOfBears: BearCounts.hard},
+    expert: {boardSize: BoardSizes.large, numberOfBears: BearCounts.expert},
 } as const;
 
 export enum GameDifficulty {
@@ -84,6 +84,6 @@ export const CellColors = {
     covered: '#D9C9BA',
     number: '#A68877',
     zero: '#00000000',
-    mine: '#00000000',
+    bear: '#00000000',
     flag: '#00000000'
 }

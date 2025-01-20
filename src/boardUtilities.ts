@@ -9,9 +9,9 @@ export const createEmptyBoard = (size: BoardSize): Board => {
             Array(size.columns).fill(0).map((_column, columnIndex: number): Cell => ({
                 row: rowIndex,
                 column: columnIndex,
-                adjacentMines: 0,
+                adjacentBears: 0,
                 isFlagged: false,
-                isMine: false,
+                isBear: false,
                 isRevealed: false
             }))
         ))
@@ -32,24 +32,24 @@ export const getLocationModifier = (direction: Direction): Position => {
     return result;
 }
 
-// adds mines in random places on the board
-export const plantMines = (board: Board, numberOfMines: number): Board => {
-    // create a list of length numberOfMines of random addresses {row:number,column:number}[]
-    const randomRows = new Array(numberOfMines).fill(0).map(() => Math.floor(Math.random() * board.cells.length))
-    const randomColumns = new Array(numberOfMines).fill(0).map(() => Math.floor(Math.random() * board.cells[0].length))
+// adds bears in random places on the board
+export const placeBears = (board: Board, numberOfBears: number): Board => {
+    // create a list of length numberOfBears of random addresses {row:number,column:number}[]
+    const randomRows = new Array(numberOfBears).fill(0).map(() => Math.floor(Math.random() * board.cells.length))
+    const randomColumns = new Array(numberOfBears).fill(0).map(() => Math.floor(Math.random() * board.cells[0].length))
     // combine (zipper) randomRows and randomColumns into {row:number,column:number}[]
     const randomLocations = randomRows.map((row, colIndex) => ({row, column: randomColumns[colIndex]}));
-    // plant the mines on the board using immer
+    // plant the bears on the board using immer
     return produce(board, (draftBoard: Board) => {
         randomLocations.forEach((location) => {
-            draftBoard.cells[location.row][location.column].isMine = true
+            draftBoard.cells[location.row][location.column].isBear = true
         })
     });
 }
 
-// get number of adjacent mines for a cell
-export const getAdjacentMines = (board: Board, cell: Cell): Cell[] => {
-    return getAllNeighbors(board, cell).filter(neighbor => neighbor.isMine)
+// get number of adjacent bears for a cell
+export const getAdjacentBears = (board: Board, cell: Cell): Cell[] => {
+    return getAllNeighbors(board, cell).filter(neighbor => neighbor.isBear)
 }
 
 // toggle isFlagged
@@ -91,7 +91,7 @@ export const getUnrevealedNeighbors = (board: Board, cell: Cell) => {
 export const revealCellAndNeighbors = (board: Board, cell: Cell) => {
     let newBoard = _.cloneDeep(board)
     newBoard = revealCell(newBoard, cell)
-    if (cell.adjacentMines > 0) return newBoard
+    if (cell.adjacentBears > 0) return newBoard
 
     const unrevealedNeighbors = getUnrevealedNeighbors(board, cell)
     for (const neighbor of unrevealedNeighbors) {
@@ -101,12 +101,12 @@ export const revealCellAndNeighbors = (board: Board, cell: Cell) => {
 }
 
 export const didWin = (board: Board) => {
-    return board.cells.flat().filter(cell => !cell.isRevealed && !cell.isMine).length === 0
+    return board.cells.flat().filter(cell => !cell.isRevealed && !cell.isBear).length === 0
 }
 
 
-export const mineCount = (board: Board) => {
-    return board.cells.flat().filter(cell => cell.isMine).length
+export const bearCount = (board: Board) => {
+    return board.cells.flat().filter(cell => cell.isBear).length
 }
 
 export const flagAllHidden = (board: Board) => {
@@ -119,26 +119,26 @@ export const flagAllHidden = (board: Board) => {
     })
 }
 
-export const detonateAll = (board: Board) => {
+export const revealAllBears = (board: Board) => {
     return produce(board, draftBoard => {
         board.cells.flat().forEach(cell => {
-            if (cell.isMine) {
+            if (cell.isBear) {
                 draftBoard.cells[cell.row][cell.column].isRevealed = true;
             }
         })
     })
 }
 
-// calculate Adjacent Mines for the entire board
-export const populateAdjacentMines = (board: Board): Board => {
+// calculate Adjacent Bears for the entire board
+export const populateAdjacentBears = (board: Board): Board => {
     return produce(board, draftBoard => {
         board.cells.flat().forEach(cell => {
-            const adjacentMines = getAdjacentMines(board, cell);
-            draftBoard.cells[cell.row][cell.column].adjacentMines = adjacentMines.length;
+            const adjacentBears = getAdjacentBears(board, cell);
+            draftBoard.cells[cell.row][cell.column].adjacentBears = adjacentBears.length;
         })
     })
 }
 
 export const createBoard = (difficulty: GameDifficulty): Board => {
-    return populateAdjacentMines(plantMines(createEmptyBoard(Difficulty[difficulty].boardSize), Difficulty[difficulty].numberOfMines))
+    return populateAdjacentBears(placeBears(createEmptyBoard(Difficulty[difficulty].boardSize), Difficulty[difficulty].numberOfBears))
 };

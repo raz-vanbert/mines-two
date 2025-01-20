@@ -18,17 +18,17 @@ export default function CellBox({cell, onClick, onRightClick}: {
 const getCellDisplayValue = (cell: Cell) => {
     if (cell.isFlagged) return '🚩'
     if (!cell.isRevealed) return null
-    if (cell.isMine) return '💣'
-    if (cell.adjacentMines > 0) return cell.adjacentMines
+    if (cell.isBear) return '🐻'
+    if (cell.adjacentBears > 0) return cell.adjacentBears
     return null
 }
 
 const getCellColor = (cell: Cell) => {
     if (cell.isFlagged) return CellColors.flag
     if (!cell.isRevealed) return CellColors.covered
-    if (cell.adjacentMines === 0) return CellColors.zero
-    if (cell.adjacentMines > 0) return CellColors.number
-    if (cell.isMine) return CellColors.mine
+    if (cell.adjacentBears === 0) return CellColors.zero
+    if (cell.adjacentBears > 0) return CellColors.number
+    if (cell.isBear) return CellColors.bear
 }
 
 const cellStyle = (cell: Cell) => ({

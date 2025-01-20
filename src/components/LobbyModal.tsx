@@ -3,7 +3,7 @@ import {GameDifficulty, GameState} from "../board.ts";
 import {useContext, useMemo} from "react";
 import {TimeContext} from "../providers/TimeContext.tsx";
 import {BoardContext} from "../providers/BoardContext.tsx";
-import {mineCount} from "../boardUtilities.ts";
+import {bearCount} from "../boardUtilities.ts";
 import {useAnimate} from "motion/react";
 import {GameStateContext} from "../providers/GameStateContext.tsx";
 
@@ -33,15 +33,20 @@ export default function LobbyModal({newGame}: {
     const newHardGame = () => newGame(GameDifficulty.hard)
     const newExpertGame = () => newGame(GameDifficulty.expert)
 
+    const topText = useMemo(() => {
+        if (gameState === GameState.lobby) return 'Welcome to'
+        return ''
+    }, [gameState])
+
     const headerText = useMemo(() => {
         if (gameState === GameState.paused) return 'Paused'
         if (gameState === GameState.won) return 'You Win!'
         if (gameState === GameState.lost) return 'Game Over'
-        return 'Mines!'
+        return 'Kodiak Quest'
     }, [gameState])
 
     const subheaderText = useMemo(() => {
-        if (gameState === GameState.won) return `You located ${mineCount(board)} mines in ${seconds} seconds.`
+        if (gameState === GameState.won) return `You located ${bearCount(board)} bears in ${seconds} seconds.`
         return null
     }, [board, gameState, seconds])
 
@@ -61,7 +66,9 @@ export default function LobbyModal({newGame}: {
         <Backdrop ref={scope} open={true} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
             <Paper elevation={4}>
                 <Stack spacing={1} padding={1}>
-                    <Typography variant='h4'>{headerText}</Typography>
+                    <Typography variant='h2'>🐻</Typography>
+                    <Typography variant='button' sx={{marginTop: '0 !important'}}>{topText}</Typography>
+                    <Typography variant='h4' sx={{marginTop: '0 !important'}}>{headerText}</Typography>
                     <Typography variant='subtitle1'>{subheaderText}</Typography>
                     <Button sx={{backgroundColor: '#D9C9BA', color: '#592816'}}
                             onClick={newEasyGame}>New
