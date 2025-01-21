@@ -1,4 +1,4 @@
-import {Backdrop, Button, Paper, Stack, TextField, Typography} from "@mui/material";
+import {Backdrop, Button, Divider, Paper, Stack, TextField, Typography} from "@mui/material";
 import {GameDifficulty, GameState} from "../../board.ts";
 import {ChangeEvent, MouseEvent, useContext, useMemo, useState} from "react";
 import {TimeContext} from "../../providers/TimeContext.tsx";
@@ -7,6 +7,7 @@ import {bearCount} from "../../boardUtilities.ts";
 import {useAnimate} from "motion/react";
 import {GameStateContext} from "../../providers/GameStateContext.tsx";
 import _ from 'lodash'
+import Leaderboard from "../leaderboard/Leaderboard.tsx";
 
 const HOW_TO_BLURB = "Kodiak Quest challenges you to navigate a virtual wilderness where " +
     "hidden bears lurk beneath the grid. Each square you reveal shows a number indicating how many " +
@@ -35,38 +36,13 @@ export default function LobbyModal({newGame}: {
     }
     const {gameState, setGameState, resumeGame, score, handleSubmitScore} = gameStateContext
 
-    const newEasyGame = () => newGame(GameDifficulty.easy)
-    const newModerateGame = () => newGame(GameDifficulty.moderate)
-    const newHardGame = () => newGame(GameDifficulty.hard)
-    const newExpertGame = () => newGame(GameDifficulty.expert)
-
-    const topText = useMemo(() => {
-        if (gameState === GameState.lobby) return 'Welcome to'
-        return ''
-    }, [gameState])
-
-    const headerText = useMemo(() => {
-        if (gameState === GameState.paused) return 'Paused'
-        if (gameState === GameState.won) return 'You Win!'
-        if (gameState === GameState.lost) return 'Game Over'
-        return 'Kodiak Quest'
-    }, [gameState])
-
-    const subheaderText = useMemo(() => {
-        if (gameState === GameState.won) return `You located ${bearCount(board)} bears in ${seconds} seconds.`
-        return null
-    }, [board, gameState, seconds])
-
-    const [scope, animate] = useAnimate()
-    const onMouseDown = (e: MouseEvent) => {
-        if (!_.isEqual(e.target, e.currentTarget)) return
-        if (gameState === GameState.lobby) return
-        animate(scope.current, {opacity: 0}, {duration: .25})
-        resumeGame()
+    const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false)
+    const showLeaderboard = () => {
+        setIsLeaderboardVisible(true)
     }
 
-    const onMouseUp = () => {
-        animate(scope.current, {opacity: 1}, {duration: .5})
+    const hideLeaderboard = () => {
+        setIsLeaderboardVisible(false)
     }
 
     const [showHowTo, setShowHowTo] = useState(false)
@@ -74,6 +50,44 @@ export default function LobbyModal({newGame}: {
         setShowHowTo(true)
     }
     const hideHowTo = () => setShowHowTo(false)
+
+    const newEasyGame = () => newGame(GameDifficulty.easy)
+    const newModerateGame = () => newGame(GameDifficulty.moderate)
+    const newHardGame = () => newGame(GameDifficulty.hard)
+    const newExpertGame = () => newGame(GameDifficulty.expert)
+
+    const topText = useMemo(() => {
+        if (showHowTo) return 'How to Play'
+        if (isLeaderboardVisible) return 'Leaderboard'
+        if (gameState === GameState.lobby) return 'Welcome to'
+        return ''
+    }, [gameState, showHowTo, isLeaderboardVisible])
+
+    const headerText = useMemo(() => {
+        if (showHowTo || isLeaderboardVisible) return ''
+        if (gameState === GameState.paused) return 'Paused'
+        if (gameState === GameState.won) return 'You Win!'
+        if (gameState === GameState.lost) return 'Game Over'
+        return 'Kodiak Quest'
+    }, [gameState, showHowTo, isLeaderboardVisible])
+
+    const subheaderText = useMemo(() => {
+        if (gameState === GameState.won) return `You located ${bearCount(board)} bears in ${seconds} seconds.`
+        return null
+    }, [board, gameState, seconds])
+
+
+    const [backdrop, animate] = useAnimate()
+    const onMouseDown = (e: MouseEvent) => {
+        if (!_.isEqual(e.target, e.currentTarget)) return
+        if (gameState === GameState.lobby) return
+        animate(backdrop.current, {opacity: 0}, {duration: .25})
+        resumeGame()
+    }
+
+    const onMouseUp = () => {
+        animate(backdrop.current, {opacity: 1}, {duration: .5})
+    }
 
     const [playerName, setPlayerName] = useState('')
     const [playerNameError, setPlayerNameError] = useState(false)
@@ -90,8 +104,9 @@ export default function LobbyModal({newGame}: {
     }
 
     return (
-        <Backdrop ref={scope} open={true} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
-            <Paper elevation={4} sx={{maxWidth: 380}}>
+        <Backdrop ref={backdrop} open={true} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
+
+            <Paper elevation={4} sx={{maxWidth: 380, minWidth: 280, minHeight: 400}}>
                 <Stack spacing={1} padding={1}>
                     <Typography variant='h2'>🐻</Typography>
                     <Typography variant='button' sx={{marginTop: '0 !important'}}>{topText}</Typography>
@@ -113,28 +128,44 @@ export default function LobbyModal({newGame}: {
                             </Button>
                         </Stack>
                         : <>
-                            {showHowTo ?
+                            {isLeaderboardVisible ?
                                 <>
-                                    <Typography variant='body1'>{HOW_TO_BLURB}</Typography>
+                                    <Leaderboard/>
                                     <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
-                                            onClick={hideHowTo}>ok</Button>
+                                            onClick={hideLeaderboard}>ok</Button>
                                 </>
-                                : <>
-                                    <Button variant="outlined" sx={{color: '#592816'}} onClick={onHowToClick}>How to
-                                        play</Button>
-                                    <Button sx={{backgroundColor: '#D9C9BA', color: '#592816'}}
-                                            onClick={newEasyGame}>New
-                                        Easy Game</Button>
-                                    <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
-                                            onClick={newModerateGame}>New
-                                        Moderate Game</Button>
-                                    <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}}
-                                            onClick={newHardGame}>New
-                                        Hard Game</Button>
-                                    <Button sx={{backgroundColor: '#592816', color: '#D9C9BA'}}
-                                            onClick={newExpertGame}>New
-                                        Expert Game</Button>
-                                </>}
+                                : showHowTo ?
+                                    <>
+                                        <Typography variant='body1'>{HOW_TO_BLURB}</Typography>
+                                        <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
+                                                onClick={hideHowTo}>ok</Button>
+                                    </>
+                                    : <>
+                                        <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}}
+                                                onClick={showLeaderboard}>
+                                            Leaderboard
+                                        </Button>
+                                        <Button variant="outlined" sx={{color: '#592816'}} onClick={onHowToClick}>
+                                            How to play
+                                        </Button>
+                                        <Divider/>
+                                        <Button sx={{backgroundColor: '#D9C9BA', color: '#592816'}}
+                                                onClick={newEasyGame}>
+                                            New Easy Game
+                                        </Button>
+                                        <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
+                                                onClick={newModerateGame}>
+                                            New Moderate Game
+                                        </Button>
+                                        <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}}
+                                                onClick={newHardGame}>
+                                            New Hard Game
+                                        </Button>
+                                        <Button sx={{backgroundColor: '#592816', color: '#D9C9BA'}}
+                                                onClick={newExpertGame}>
+                                            New Expert Game
+                                        </Button>
+                                    </>}
                         </>}
                 </Stack>
             </Paper>

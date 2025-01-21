@@ -1,5 +1,5 @@
 import {DynamoDBClient} from "@aws-sdk/client-dynamodb";
-import {PutCommand} from "@aws-sdk/lib-dynamodb";
+import {PutCommand, ScanCommand} from "@aws-sdk/lib-dynamodb";
 
 // Initialize DynamoDB Client
 const client = new DynamoDBClient({
@@ -31,6 +31,22 @@ export async function submitScore(playerName: string, score: number) {
         console.log("Score submitted successfully!");
     } catch (error) {
         console.error("Error submitting score:", error);
+        throw error;
+    }
+}
+
+export async function getLeaderboard() {
+    const params = {
+        TableName: 'Leaderboaed',
+        Limit: 10,
+    };
+
+    try {
+        const command = new ScanCommand(params);
+        const data = await client.send(command);
+        return data.Items;
+    } catch (error) {
+        console.error("Error getting scores:", error);
         throw error;
     }
 }
