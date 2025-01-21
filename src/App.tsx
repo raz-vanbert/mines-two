@@ -6,12 +6,12 @@ import {
     didWin,
     flagAllHidden,
     flagCell,
-    revealCellAndNeighbors
+    revealCellAndNeighbors, bearCount
 } from "./boardUtilities.ts";
 import {Board, Cell, GameDifficulty, GameState} from "./board.ts";
 import RemainingBears from "./components/RemainingBears.tsx";
 import GameStateIcon from "./components/GameStateIcon.tsx";
-import LobbyModal from "./components/LobbyModal.tsx";
+import LobbyModal from "./components/modals/LobbyModal.tsx";
 import CellBox from "./components/CellBox.tsx";
 import {TimeContext} from "./providers/TimeContext.tsx";
 import {BoardContext} from "./providers/BoardContext.tsx";
@@ -36,7 +36,7 @@ export default function App() {
     if (!gameStateContext) {
         throw new Error("GameStateContext used outside GameStateProvider")
     }
-    const {gameState, setGameState, pauseGame} = gameStateContext
+    const {gameState, setGameState, pauseGame, setScore} = gameStateContext
 
 
     useEffect(() => {
@@ -67,7 +67,11 @@ export default function App() {
     }
 
     const winGame = (_board: Board) => {
+        // calculate and set the score
+        const numBears = bearCount(_board)
+        const score = Math.floor(numBears / seconds * 1000)
         const newBoard = flagAllHidden(_board)
+        setScore(score)
         setBoard(newBoard)
         setGameState(GameState.won)
     }

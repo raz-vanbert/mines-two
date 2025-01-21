@@ -1,11 +1,15 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useState,} from "react";
 import {GameState} from "../board.ts";
+import {submitScore} from "../services/awsService"
 
 interface GameStateContextValue {
     gameState: GameState
     setGameState: Dispatch<SetStateAction<GameState>>
     pauseGame: () => void
     resumeGame: () => void
+    score: number
+    setScore: Dispatch<SetStateAction<number>>
+    handleSubmitScore: (playerName: string) => void
 }
 
 export const GameStateContext = createContext<GameStateContextValue | null>(null)
@@ -16,6 +20,8 @@ interface GameStateProviderProps {
 
 export function GameStateProvider({children}: GameStateProviderProps) {
     const [gameState, setGameState] = useState(GameState.lobby)
+
+    const [score, setScore] = useState<number>(0)
 
     const pauseGame = () => {
         if (gameState === GameState.playing) {
@@ -29,11 +35,23 @@ export function GameStateProvider({children}: GameStateProviderProps) {
         }
     }
 
+    const handleSubmitScore = async (playerName: string) => {
+        try {
+            await submitScore(playerName, score)
+            console.log('Score submitted!')
+        } catch (error) {
+            console.error('Error submitting score:', error)
+        }
+    }
+
     const value: GameStateContextValue = {
         gameState,
         setGameState,
         pauseGame,
-        resumeGame
+        resumeGame,
+        score,
+        setScore,
+        handleSubmitScore
     }
 
     return (

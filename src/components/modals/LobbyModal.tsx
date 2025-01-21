@@ -1,11 +1,11 @@
-import {Backdrop, Button, Paper, Stack, Typography} from "@mui/material";
-import {GameDifficulty, GameState} from "../board.ts";
-import {MouseEvent, useContext, useMemo, useState} from "react";
-import {TimeContext} from "../providers/TimeContext.tsx";
-import {BoardContext} from "../providers/BoardContext.tsx";
-import {bearCount} from "../boardUtilities.ts";
+import {Backdrop, Button, Paper, Stack, TextField, Typography} from "@mui/material";
+import {GameDifficulty, GameState} from "../../board.ts";
+import {ChangeEvent, MouseEvent, useContext, useMemo, useState} from "react";
+import {TimeContext} from "../../providers/TimeContext.tsx";
+import {BoardContext} from "../../providers/BoardContext.tsx";
+import {bearCount} from "../../boardUtilities.ts";
 import {useAnimate} from "motion/react";
-import {GameStateContext} from "../providers/GameStateContext.tsx";
+import {GameStateContext} from "../../providers/GameStateContext.tsx";
 import _ from 'lodash'
 
 const HOW_TO_BLURB = "Kodiak Quest challenges you to navigate a virtual wilderness where " +
@@ -33,7 +33,7 @@ export default function LobbyModal({newGame}: {
     if (!gameStateContext) {
         throw new Error("GameStateContext used outside GameStateProvider")
     }
-    const {gameState, resumeGame} = gameStateContext
+    const {gameState, setGameState, resumeGame, score, handleSubmitScore} = gameStateContext
 
     const newEasyGame = () => newGame(GameDifficulty.easy)
     const newModerateGame = () => newGame(GameDifficulty.moderate)
@@ -75,6 +75,19 @@ export default function LobbyModal({newGame}: {
     }
     const hideHowTo = () => setShowHowTo(false)
 
+    const [playerName, setPlayerName] = useState('')
+    const [playerNameError, setPlayerNameError] = useState(false)
+    const onPlayerNameChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setPlayerName(e.target.value)
+    }
+    const onScoreSubmit = () => {
+        if (playerName.length === 0) {
+            setPlayerNameError(true)
+            return
+        }
+        handleSubmitScore(playerName)
+        setGameState(GameState.lobby)
+    }
 
     return (
         <Backdrop ref={scope} open={true} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
@@ -84,26 +97,39 @@ export default function LobbyModal({newGame}: {
                     <Typography variant='button' sx={{marginTop: '0 !important'}}>{topText}</Typography>
                     <Typography variant='h4' sx={{marginTop: '0 !important'}}>{headerText}</Typography>
                     <Typography variant='subtitle1'>{subheaderText}</Typography>
-                    {showHowTo ? <><Typography variant='body1'>{HOW_TO_BLURB}</Typography>
-                            <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
-                                    onClick={hideHowTo}>ok</Button>
-                        </> :
-                        <>
-                            <Button variant="outlined" sx={{color: '#592816'}} onClick={onHowToClick}>How to
-                                play</Button>
-                            <Button sx={{backgroundColor: '#D9C9BA', color: '#592816'}}
-                                    onClick={newEasyGame}>New
-                                Easy Game</Button>
-                            <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
-                                    onClick={newModerateGame}>New
-                                Moderate Game</Button>
-                            <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}}
-                                    onClick={newHardGame}>New
-                                Hard Game</Button>
-                            <Button sx={{backgroundColor: '#592816', color: '#D9C9BA'}}
-                                    onClick={newExpertGame}>New
-                                Expert Game</Button>
-                        </>}
+                    {gameState === GameState.won ?
+                        <Stack>
+                            <Typography variant='button'>Your Score: {score}</Typography>
+                            <Typography variant='body1'>Wanna add it to the leaderboard?</Typography>
+                            <TextField
+                                label="Name"
+                                value={playerName}
+                                error={playerNameError}
+                                onChange={onPlayerNameChange}
+                            />
+                            <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}} onClick={onScoreSubmit}>Submit
+                                score</Button>
+                        </Stack>
+                        : <>{showHowTo ? <><Typography variant='body1'>{HOW_TO_BLURB}</Typography>
+                                <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
+                                        onClick={hideHowTo}>ok</Button>
+                            </>
+                            : <>
+                                <Button variant="outlined" sx={{color: '#592816'}} onClick={onHowToClick}>How to
+                                    play</Button>
+                                <Button sx={{backgroundColor: '#D9C9BA', color: '#592816'}}
+                                        onClick={newEasyGame}>New
+                                    Easy Game</Button>
+                                <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
+                                        onClick={newModerateGame}>New
+                                    Moderate Game</Button>
+                                <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}}
+                                        onClick={newHardGame}>New
+                                    Hard Game</Button>
+                                <Button sx={{backgroundColor: '#592816', color: '#D9C9BA'}}
+                                        onClick={newExpertGame}>New
+                                    Expert Game</Button>
+                            </>}</>}
                 </Stack>
             </Paper>
         </Backdrop>
