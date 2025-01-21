@@ -99,37 +99,43 @@ export default function LobbyModal({newGame}: {
                     <Typography variant='subtitle1'>{subheaderText}</Typography>
                     {gameState === GameState.won ?
                         <Stack>
-                            <Typography variant='button'>Your Score: {score}</Typography>
+                            <Typography variant='h6'>Your Score: {score}</Typography>
                             <Typography variant='body1'>Wanna add it to the leaderboard?</Typography>
                             <TextField
+                                sx={{marginTop: 2, marginBottom: 2}}
                                 label="Name"
                                 value={playerName}
                                 error={playerNameError}
                                 onChange={onPlayerNameChange}
                             />
-                            <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}} onClick={onScoreSubmit}>Submit
-                                score</Button>
+                            <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}} onClick={onScoreSubmit}>
+                                Submit score
+                            </Button>
                         </Stack>
-                        : <>{showHowTo ? <><Typography variant='body1'>{HOW_TO_BLURB}</Typography>
-                                <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
-                                        onClick={hideHowTo}>ok</Button>
-                            </>
-                            : <>
-                                <Button variant="outlined" sx={{color: '#592816'}} onClick={onHowToClick}>How to
-                                    play</Button>
-                                <Button sx={{backgroundColor: '#D9C9BA', color: '#592816'}}
-                                        onClick={newEasyGame}>New
-                                    Easy Game</Button>
-                                <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
-                                        onClick={newModerateGame}>New
-                                    Moderate Game</Button>
-                                <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}}
-                                        onClick={newHardGame}>New
-                                    Hard Game</Button>
-                                <Button sx={{backgroundColor: '#592816', color: '#D9C9BA'}}
-                                        onClick={newExpertGame}>New
-                                    Expert Game</Button>
-                            </>}</>}
+                        : <>
+                            {showHowTo ?
+                                <>
+                                    <Typography variant='body1'>{HOW_TO_BLURB}</Typography>
+                                    <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
+                                            onClick={hideHowTo}>ok</Button>
+                                </>
+                                : <>
+                                    <Button variant="outlined" sx={{color: '#592816'}} onClick={onHowToClick}>How to
+                                        play</Button>
+                                    <Button sx={{backgroundColor: '#D9C9BA', color: '#592816'}}
+                                            onClick={newEasyGame}>New
+                                        Easy Game</Button>
+                                    <Button sx={{backgroundColor: '#A68877', color: '#26130B'}}
+                                            onClick={newModerateGame}>New
+                                        Moderate Game</Button>
+                                    <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}}
+                                            onClick={newHardGame}>New
+                                        Hard Game</Button>
+                                    <Button sx={{backgroundColor: '#592816', color: '#D9C9BA'}}
+                                            onClick={newExpertGame}>New
+                                        Expert Game</Button>
+                                </>}
+                        </>}
                 </Stack>
             </Paper>
         </Backdrop>

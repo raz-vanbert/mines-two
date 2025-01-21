@@ -1,10 +1,12 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useState,} from "react";
-import {GameState} from "../board.ts";
+import {GameDifficulty, GameState} from "../board.ts";
 import {submitScore} from "../services/awsService"
 
 interface GameStateContextValue {
     gameState: GameState
     setGameState: Dispatch<SetStateAction<GameState>>
+    gameDifficulty: GameDifficulty
+    setGameDifficulty: Dispatch<SetStateAction<GameDifficulty>>
     pauseGame: () => void
     resumeGame: () => void
     score: number
@@ -20,7 +22,7 @@ interface GameStateProviderProps {
 
 export function GameStateProvider({children}: GameStateProviderProps) {
     const [gameState, setGameState] = useState(GameState.lobby)
-
+    const [gameDifficulty, setGameDifficulty] = useState(GameDifficulty.easy)
     const [score, setScore] = useState<number>(0)
 
     const pauseGame = () => {
@@ -49,6 +51,8 @@ export function GameStateProvider({children}: GameStateProviderProps) {
         setGameState,
         pauseGame,
         resumeGame,
+        gameDifficulty,
+        setGameDifficulty,
         score,
         setScore,
         handleSubmitScore

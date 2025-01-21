@@ -72,6 +72,13 @@ export enum GameDifficulty {
     expert = 'expert'
 }
 
+export const DifficultyMultipliers = {
+    easy: 1000,
+    moderate: 3000,
+    hard: 5000,
+    expert: 10000,
+} as const;
+
 export enum GameState {
     lobby = -1,
     playing = 0,
