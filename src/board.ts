@@ -8,6 +8,16 @@ export interface Cell {
     cell?: Cell
 }
 
+
+
+export const CellColors = {
+    covered: '#D9C9BA',
+    number: '#A68877',
+    zero: '#00000000',
+    bear: '#00000000',
+    flag: '#00000000'
+}
+
 export interface Position {
     row: number
     column: number
@@ -85,12 +95,4 @@ export enum GameState {
     paused = 1,
     won = 2,
     lost = 3,
-}
-
-export const CellColors = {
-    covered: '#D9C9BA',
-    number: '#A68877',
-    zero: '#00000000',
-    bear: '#00000000',
-    flag: '#00000000'
 }

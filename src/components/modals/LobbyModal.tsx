@@ -1,7 +1,6 @@
 import {Backdrop, Button, Divider, Paper, Stack, TextField, Typography} from "@mui/material";
 import {GameDifficulty, GameState} from "../../board.ts";
 import {ChangeEvent, MouseEvent, useContext, useMemo, useState} from "react";
-import {TimeContext} from "../../providers/TimeContext.tsx";
 import {BoardContext} from "../../providers/BoardContext.tsx";
 import {bearCount} from "../../boardUtilities.ts";
 import {useAnimate} from "motion/react";
@@ -18,12 +17,6 @@ const HOW_TO_BLURB = "Kodiak Quest challenges you to navigate a virtual wilderne
 export default function LobbyModal({newGame}: {
     newGame: (difficulty: GameDifficulty) => void
 }) {
-    const timeContext = useContext(TimeContext)
-    if (!timeContext) {
-        throw new Error("timeContext used outside the TimeContext Provider")
-    }
-    const {seconds} = timeContext
-
     const boardContext = useContext(BoardContext)
     if (!boardContext) {
         throw new Error("BoardContext used outside BoardProvider")
@@ -34,7 +27,7 @@ export default function LobbyModal({newGame}: {
     if (!gameStateContext) {
         throw new Error("GameStateContext used outside GameStateProvider")
     }
-    const {gameState, setGameState, resumeGame, score, handleSubmitScore} = gameStateContext
+    const {gameState, setGameState, resumeGame, score, handleSubmitScore, seconds} = gameStateContext
 
     const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false)
     const showLeaderboard = () => {
@@ -100,6 +93,14 @@ export default function LobbyModal({newGame}: {
             return
         }
         handleSubmitScore(playerName)
+        setPlayerName('')
+        setPlayerNameError(false)
+        setGameState(GameState.lobby)
+    }
+
+    const onDismissScore = () => {
+        setPlayerName('')
+        setPlayerNameError(false)
         setGameState(GameState.lobby)
     }
 
@@ -117,14 +118,19 @@ export default function LobbyModal({newGame}: {
                             <Typography variant='h6'>Your Score: {score}</Typography>
                             <Typography variant='body1'>Wanna add it to the leaderboard?</Typography>
                             <TextField
-                                sx={{marginTop: 2, marginBottom: 2}}
+                                sx={{marginTop: 2}}
                                 label="Name"
                                 value={playerName}
                                 error={playerNameError}
                                 onChange={onPlayerNameChange}
                             />
-                            <Button sx={{backgroundColor: '#8C694A', color: '#26130B'}} onClick={onScoreSubmit}>
+                            <Button sx={{backgroundColor: '#8C694A', color: '#26130B', marginTop: 2}}
+                                    onClick={onScoreSubmit}>
                                 Submit score
+                            </Button>
+                            <Button sx={{backgroundColor: '#A68877', color: '#26130B', marginTop: 2}}
+                                    onClick={onDismissScore}>
+                                No Thanks
                             </Button>
                         </Stack>
                         : <>

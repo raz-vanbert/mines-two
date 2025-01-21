@@ -1,4 +1,4 @@
-import {SyntheticEvent, useContext, useEffect} from "react";
+import {SyntheticEvent, useContext} from "react";
 import {Box, Stack} from "@mui/material";
 import {
     createBoard,
@@ -13,19 +13,11 @@ import RemainingBears from "./components/RemainingBears.tsx";
 import GameStateIcon from "./components/GameStateIcon.tsx";
 import LobbyModal from "./components/modals/LobbyModal.tsx";
 import CellBox from "./components/CellBox.tsx";
-import {TimeContext} from "./providers/TimeContext.tsx";
 import {BoardContext} from "./providers/BoardContext.tsx";
 import {GameStateContext} from "./providers/GameStateContext.tsx";
 import './App.css'
 
 export default function App() {
-
-    const timeContext = useContext(TimeContext)
-    if (!timeContext) {
-        throw new Error("TimeContext used outside TimeProvider")
-    }
-    const {seconds, startTime, stopTime, resetTime} = timeContext
-
     const boardContext = useContext(BoardContext)
     if (!boardContext) {
         throw new Error("BoardContext used outside BoardProvider")
@@ -36,16 +28,7 @@ export default function App() {
     if (!gameStateContext) {
         throw new Error("GameStateContext used outside GameStateProvider")
     }
-    const {gameState, setGameState, gameDifficulty, setGameDifficulty, pauseGame, setScore} = gameStateContext
-
-
-    useEffect(() => {
-        if (gameState === GameState.playing) {
-            startTime()
-        } else {
-            stopTime()
-        }
-    }, [gameState, startTime, stopTime])
+    const {gameState, setGameState, gameDifficulty, setGameDifficulty, pauseGame, setScore, seconds, startTime, stopTime, resetTime} = gameStateContext
 
     const newGame = (difficulty: GameDifficulty) => {
         const newBoard = createBoard(difficulty)
@@ -62,6 +45,7 @@ export default function App() {
     const gameOver = () => {
         // reveal all cells
         const newBoard = revealAllBears(board)
+        stopTime()
         setBoard(newBoard)
         // set game state to lost
         setGameState(GameState.lost)
@@ -72,12 +56,15 @@ export default function App() {
         const numBears = bearCount(_board)
         const score = Math.floor(numBears / seconds * DifficultyMultipliers[gameDifficulty])
         const newBoard = flagAllHidden(_board)
+        stopTime()
         setScore(score)
         setBoard(newBoard)
         setGameState(GameState.won)
     }
 
     const onCellClick = (cell: Cell) => {
+        // start time on first cell click
+        if (seconds === 0) startTime()
         if (cell.isFlagged || cell.isRevealed || gameState !== GameState.playing) return
         if (cell.isBear) {
             gameOver()
