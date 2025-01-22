@@ -13,22 +13,15 @@ import RemainingBears from "./components/RemainingBears.tsx";
 import GameStateIcon from "./components/GameStateIcon.tsx";
 import LobbyModal from "./components/modals/LobbyModal.tsx";
 import CellBox from "./components/CellBox.tsx";
-import {BoardContext} from "./providers/BoardContext.tsx";
 import {GameStateContext} from "./providers/GameStateContext.tsx";
 import './App.css'
 
 export default function App() {
-    const boardContext = useContext(BoardContext)
-    if (!boardContext) {
-        throw new Error("BoardContext used outside BoardProvider")
-    }
-    const {board, setBoard} = boardContext
-
     const gameStateContext = useContext(GameStateContext)
     if (!gameStateContext) {
         throw new Error("GameStateContext used outside GameStateProvider")
     }
-    const {gameState, setGameState, gameDifficulty, setGameDifficulty, pauseGame, setScore, seconds, startTime, stopTime, resetTime} = gameStateContext
+    const {board, setBoard, gameState, setGameState, gameDifficulty, setGameDifficulty, pauseGame, setScore, seconds, startTime, stopTime, resetTime} = gameStateContext
 
     const newGame = (difficulty: GameDifficulty) => {
         const newBoard = createBoard(difficulty)

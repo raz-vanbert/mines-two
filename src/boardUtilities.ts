@@ -12,7 +12,8 @@ export const createEmptyBoard = (size: BoardSize): Board => {
                 adjacentBears: 0,
                 isFlagged: false,
                 isBear: false,
-                isRevealed: false
+                isRevealed: false,
+                glow: false
             }))
         ))
     };
@@ -86,6 +87,33 @@ export const getAllNeighbors = (board: Board, cell: Cell): Cell[] => {
 
 export const getUnrevealedNeighbors = (board: Board, cell: Cell) => {
     return getAllNeighbors(board, cell).filter(neighbor => !neighbor.isRevealed)
+}
+
+const unGlowAll = (board:Board) => {
+    return produce(board, (draftBoard:Board) => {
+        board.cells.flat().forEach(cell => {
+            draftBoard.cells[cell.row][cell.column].glow = false;
+        })
+    })
+}
+
+export const glowNeighbors = (_board:Board,cell:Cell) => {
+    const neighbors = getUnrevealedNeighbors(_board, cell).filter(neighbor => !neighbor.isFlagged)
+    const board = unGlowAll(_board)
+    return produce(board, (draftBoard:Board) => {
+        neighbors.forEach(neighbor => {
+            draftBoard.cells[neighbor.row][neighbor.column].glow = true;
+        })
+    })
+}
+
+export const unGlowNeighbors = (board:Board,cell:Cell) => {
+    const neighbors = getUnrevealedNeighbors(board, cell)
+    return produce(board, (draftBoard:Board) => {
+        neighbors.forEach(neighbor => {
+            draftBoard.cells[neighbor.row][neighbor.column].glow = false;
+        })
+    })
 }
 
 // Flood Reveal with Recursive Depth First Search

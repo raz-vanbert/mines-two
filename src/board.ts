@@ -5,9 +5,8 @@ export interface Cell {
     isRevealed: boolean,
     row: number,
     column: number,
-    cell?: Cell
+    glow: boolean
 }
-
 
 
 export const CellColors = {

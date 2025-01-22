@@ -1,7 +1,6 @@
 import {Backdrop, Button, Divider, Paper, Stack, TextField, Typography} from "@mui/material";
 import {GameDifficulty, GameState} from "../../board.ts";
 import {ChangeEvent, MouseEvent, useContext, useMemo, useState} from "react";
-import {BoardContext} from "../../providers/BoardContext.tsx";
 import {bearCount} from "../../boardUtilities.ts";
 import {useAnimate} from "motion/react";
 import {GameStateContext} from "../../providers/GameStateContext.tsx";
@@ -17,17 +16,11 @@ const HOW_TO_BLURB = "Kodiak Quest challenges you to navigate a virtual wilderne
 export default function LobbyModal({newGame}: {
     newGame: (difficulty: GameDifficulty) => void
 }) {
-    const boardContext = useContext(BoardContext)
-    if (!boardContext) {
-        throw new Error("BoardContext used outside BoardProvider")
-    }
-    const {board} = boardContext
-
     const gameStateContext = useContext(GameStateContext)
     if (!gameStateContext) {
         throw new Error("GameStateContext used outside GameStateProvider")
     }
-    const {gameState, setGameState, resumeGame, score, handleSubmitScore, seconds} = gameStateContext
+    const {board, gameState, setGameState, resumeGame, score, handleSubmitScore, seconds} = gameStateContext
 
     const [isLeaderboardVisible, setIsLeaderboardVisible] = useState(false)
     const showLeaderboard = () => {
